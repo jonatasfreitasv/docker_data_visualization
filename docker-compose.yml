@@ -1,0 +1,41 @@
+version: '2'
+services:
+
+    metabase:
+      image: metabase/metabase
+      container_name: "metabase"
+      environment:
+        - MB_DB_FILE=/metabase-data/metabase.db
+      ports:
+        - 3000:3000
+      volumes:
+        - ./metabase-data:/metabase-data
+      links:
+        - mongodb
+        - mysql
+      depends_on:
+        - mongodb
+        - mysql
+
+    mysql:
+        image: mysql:latest
+        container_name: "mysql"
+        environment:
+          - MYSQL_ROOT_PASSWORD=abc123
+          - MYSQL_DATABASE=mysql_db
+        volumes:
+          - ./data/mysql_data:/var/lib/mysql
+        ports:
+            - 3306:3306
+
+    mongodb:
+        image: mongo:latest
+        container_name: "mongodb"
+        environment:
+          - MONGO_DATA_DIR=/data/db
+          - MONGO_LOG_DIR=/dev/null
+        volumes:
+          - ./data/mongo_data:/data/db
+        ports:
+            - 27017:27017
+        command: mongod --smallfiles --logpath=/dev/null
